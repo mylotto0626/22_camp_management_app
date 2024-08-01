@@ -138,6 +138,7 @@ public class CampManagementApplication {
                     Thread.sleep(2000);
                 }
                 //ㅇㅇㅎㅇㅎㅇㅇ
+                //왜 안되냐? 정신 차려 인텔리제이!
             }
         }
         System.out.println("프로그램을 종료합니다.");
