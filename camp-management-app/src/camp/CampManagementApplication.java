@@ -89,6 +89,7 @@ public class CampManagementApplication {
                         sequence(INDEX_TYPE_SUBJECT),
                         "Redis",
                         SUBJECT_TYPE_CHOICE
+                        // dddd
                 ),
                 new Subject(
                         sequence(INDEX_TYPE_SUBJECT),
