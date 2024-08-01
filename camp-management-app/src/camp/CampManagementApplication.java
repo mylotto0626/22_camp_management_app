@@ -117,6 +117,8 @@ public class CampManagementApplication {
         }
     }
 
+    //연습
+
     private static void displayMainView() throws InterruptedException {
         boolean flag = true;
         while (flag) {
