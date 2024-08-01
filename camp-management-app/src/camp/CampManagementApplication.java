@@ -7,7 +7,7 @@ import camp.model.Subject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
+//jh
 /**
  * Notification
  * Java, 객체지향이 아직 익숙하지 않은 분들은 위한 소스코드 틀입니다.
