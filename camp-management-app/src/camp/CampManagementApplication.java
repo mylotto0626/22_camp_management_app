@@ -137,6 +137,7 @@ public class CampManagementApplication {
                     System.out.println("잘못된 입력입니다.\n되돌아갑니다!");
                     Thread.sleep(2000);
                 }
+                //ㅇㅇㅎㅇㅎㅇㅇ
             }
         }
         System.out.println("프로그램을 종료합니다.");
