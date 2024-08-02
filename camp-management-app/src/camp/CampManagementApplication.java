@@ -7,6 +7,7 @@ import camp.model.Subject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 /**
  * Notification
@@ -18,7 +19,8 @@ import java.util.Scanner;
  */
 public class CampManagementApplication {
     // 데이터 저장소
-    private static List<Student> studentStore;
+    private static List<Student> studentStore;// 학생 고유번호 생성 카운터
+
     private static List<Subject> subjectStore;
     private static List<Score> scoreStore;
 
@@ -38,6 +40,7 @@ public class CampManagementApplication {
     private static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
+        // 학생 정보 조회
         setInitData();
         try {
             displayMainView();
@@ -171,16 +174,34 @@ public class CampManagementApplication {
         String studentName = sc.next();
         // 기능 구현 (필수 과목, 선택 과목)
 
-        Student student = new Student(sequence(INDEX_TYPE_STUDENT), studentName); // 수강생 인스턴스 생성 예시 코드
+
+        // 수강생 고유번호,이름 -> 태주
+        // 수강생 인스턴스 생성 예시 코드
+//        Student student = new Student(sequence(INDEX_TYPE_STUDENT), studentName);
         // 기능 구현
+
+
+        // 학생 생성
+        Student student = new Student(sequence(INDEX_TYPE_STUDENT),studentName);
+
+        // 더미 예시
+//        Student student1 =new Student("1","태주");
+
+        studentStore.add(student);
         System.out.println("수강생 등록 성공!\n");
+//        System.out.println("선택한 필수 과목:");
+//        chosenMandatorySubjects.forEach(System.out::println);
+//        chosenElectiveSubjects.forEach(System.out::println);
     }
+
 
     // 수강생 목록 조회
     private static void inquireStudent() {
         System.out.println("\n수강생 목록을 조회합니다...");
         // 기능 구현
-        System.out.println("\n수강생 목록 조회 성공!");
+        for(Student student:studentStore){
+            System.out.println(student);
+        }
     }
 
     private static void displayScoreView() {
