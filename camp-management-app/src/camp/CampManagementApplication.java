@@ -168,8 +168,8 @@ public class CampManagementApplication {
 
     // 수강생 등록
     private static void createStudent() {
-        List<String> mainSubjects = new ArrayList<>();
-        List<String> subSubjects = new ArrayList<>();
+        List<String> mainSubjects = new ArrayList<>(); // 필수 과목이 담기는 리스트
+        List<String> subSubjects = new ArrayList<>(); //  선택 과목이 담기는 리스트
 
         System.out.println("\n수강생을 등록합니다...");
 
@@ -178,8 +178,8 @@ public class CampManagementApplication {
 
 
         for (Subject subject : subjectStore) {
-            if (subject.getSubjectType().equals("MANDATORY")) {
-                System.out.println("[" + subject.getSubjectId() + " " + subject.getSubjectName() + "]");
+            if (subject.getSubjectType().equals("MANDATORY")) { // 필수 과목일 때
+                System.out.println("[" + subject.getSubjectId() + " " + subject.getSubjectName() + "]"); //필수 과목 리스트
             }
         }
         for (int i = 0; i < 5; i++) {
