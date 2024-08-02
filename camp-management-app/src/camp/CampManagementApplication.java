@@ -7,7 +7,7 @@ import camp.model.Subject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-// dev
+
 /**
  * Notification
  * Java, 객체지향이 아직 익숙하지 않은 분들은 위한 소스코드 틀입니다.
@@ -234,9 +234,13 @@ public class CampManagementApplication {
         }
         // 기능 구현 (필수 과목, 선택 과목)
 
-        Student student = new Student(sequence(INDEX_TYPE_SUBJECT), studentName);// 수강생 인스턴스 생성 예시 코드
-        // 기능 구현
+        // 학생 생성
+        Student student = new Student(sequence(INDEX_TYPE_STUDENT),studentName);
 
+        // 더미 예시
+//        Student student1 =new Student("1","태주");
+
+        studentStore.add(student);
         System.out.println("수강생 등록 성공!\n");
     }
 

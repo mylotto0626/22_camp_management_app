@@ -18,4 +18,7 @@ public class Student {
         return studentName;
     }
 
+    public String toString() {
+        return "학생 ID: " + studentId + ", 이름: " + studentName;
+    }
 }
