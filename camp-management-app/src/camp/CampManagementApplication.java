@@ -4,14 +4,9 @@ import camp.model.Score;
 import camp.model.Student;
 import camp.model.Subject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.LinkedHashSet;
+import java.util.*;
 
 // dev
-
 /**
  * Notification
  * Java, 객체지향이 아직 익숙하지 않은 분들은 위한 소스코드 틀입니다.
@@ -28,9 +23,11 @@ public class CampManagementApplication {
     private static List<Student> studentStore;
     private static List<Subject> subjectStore;
     private static List<Score> scoreStore;
+
     // 과목 타입
     private static String SUBJECT_TYPE_MANDATORY = "MANDATORY";
     private static String SUBJECT_TYPE_CHOICE = "CHOICE";
+
     // index 관리 필드
     private static int studentIndex;
     private static int subjectIndex;
@@ -39,6 +36,7 @@ public class CampManagementApplication {
     private static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
+        // 학생 정보 조회
         setInitData();
         try {
             displayMainView();
@@ -118,6 +116,7 @@ public class CampManagementApplication {
             }
         }
     }
+
     //연습
 
     private static void displayMainView() throws InterruptedException {
@@ -174,15 +173,21 @@ public class CampManagementApplication {
         String studentName = getStudentName(); // 해석하면 학생 이름을 가져옴 -> getStudentName() 메서드를 호출하여 학생 이름을 가져옴
         if (studentName == null) return; // 학생 이름이 null 이면(비어있으면) return -> 즉, 학생 이름이 비어있으면 이전 화면으로 이동
 
-        Set<Subject> selectedMandatorySubjects = getSubjects(SUBJECT_TYPE_MANDATORY, 3); // 필수 과목을 SUBJECT_TYPE_MANDATORY 의 minCount n개로가져옴 + set<Subject>로 반환>> = 중복X > 똑같은 과목이 여러 번 추가되는 걸 방지
+        Set<Subject> selectedMandatorySubjects = getSubjects(SUBJECT_TYPE_MANDATORY, 3); // 필수 과목을 SUBJECT_TYPE_MANDATORY 의 minCount n개로가져옴
         if (selectedMandatorySubjects == null) return; // 필수 과목이 null 이면 return -> 즉, 필수 과목이 비어있으면 이전 화면으로 이동
 
-        Set<Subject> selectedChoiceSubjects = getSubjects(SUBJECT_TYPE_CHOICE, 2); // 선택 과목을 SUBJECT_TYPE_CHOICE 의 minCount 로 n개로가져옴
-        if (selectedChoiceSubjects == null) return; // 선택 과목이 null 이면 return -> 즉, 선택 과목이 비어있으면  이전 화면으로 이동
+        Set<Subject> selectedOptionalSubjects = getSubjects(SUBJECT_TYPE_CHOICE, 2); // 선택 과목을 SUBJECT_TYPE_CHOICE 의 minCount 로 n개로가져옴
+        if (selectedOptionalSubjects == null) return; // 선택 과목이 null 이면 return -> 즉, 선택 과목이 비어있으면  이전 화면으로 이동
+
+        // 과목 수 확인
+        if (selectedMandatorySubjects.size() < 3 || selectedOptionalSubjects.size() < 2) { // 필수 과목이 3개 미만이거나 선택 과목이 2개 미만이면
+            System.out.println("필수 과목은 최소 3개, 선택 과목은 최소 2개 이상 선택해야 합니다.\n메인 화면 이동..."); // 조건이 맞지 않으면 호출할 메세지
+            return; // 이전 화면으로 이동
+        }
 
         Student student = new Student(sequence(INDEX_TYPE_STUDENT), studentName); // 수강생 등록 인스턴스 생성 -> sequence 메서드를 호출하여 INDEX_TYPE_STUDENT를 통해 학생 고유번호를 가져옴
-        selectedMandatorySubjects.forEach(student :: addSubject); // 필수 과목을 sutdent에 추가
-        selectedChoiceSubjects.forEach(student :: addSubject); // 선택 과목을 sutdent에 추가
+        selectedMandatorySubjects.forEach(student::addSubject); // 필수 과목을 sutdent에 추가
+        selectedOptionalSubjects.forEach(student::addSubject); // 선택 과목을 sutdent에 추가
 
         studentStore.add(student); // 수강생 스토어에 추가
         System.out.println("수강생 등록 성공!\n");
@@ -197,13 +202,14 @@ public class CampManagementApplication {
         }
         return studentName;
     }
-//test
+
     private static Set<Subject> getSubjects(String type, int minCount) {
-        Set<Subject> selectedSubjects = new LinkedHashSet<>(); // 중복을 허용하지 않는 Set 인터페이스를 구현한 LinkedHashSet 인스턴스 생성 -> 선택한 과목을 저장할 selectedSubjects + LinkedHashSet를 이용해 저장 순서를 유지하면서 중복방지
-        String displayType = type.equals(SUBJECT_TYPE_MANDATORY) ? "필수과목" : "선택과목"; // type이 SUBJECT_TYPE_MANDATORY 이면 "필수과목" 아니면 "선택과목"을 displayType에 저장, equals 메서드를 사용해서 스트링만으로도
-        subjectStore.stream() // subjectStore를 stream으로 변환
-                .filter(subject -> subject.getSubjectType().equals(type)) // subject의 subjectType이 type과 같은 것만 찾음 type은 SUBJECT_TYPE_MANDATORY 또는 SUBJECT_TYPE_CHOICE,
-                .forEach(subject -> System.out.println("[" + subject.getSubjectId() + "] " + subject.getSubjectName())); // 찾은 subject의 subjectId와 subjectName를 forEach를 사용하여 루프를 돌면서 출력
+        Set<Subject> selectedSubjects = new HashSet<>();
+        String displayType = type.equals(SUBJECT_TYPE_MANDATORY) ? "필수과목" : "선택과목"; // ?는 삼항연산자, type이 SUBJECT_TYPE_MANDATORY 이면 "필수과목" 아니면 "선택과목"을 displayType에 저장
+        System.out.println("\n" + displayType + "을 선택하세요. (취소: 0)");
+        subjectStore.stream()
+                .filter(subject -> subject.getSubjectType().equals(type))
+                .forEach(subject -> System.out.println("[" + subject.getSubjectId() + "] " + subject.getSubjectName()));
 
         while (true) {
             System.out.print("과목 번호를 입력하세요 (쉼표로 구분, 최소 " + minCount + "개): ");
@@ -213,34 +219,34 @@ public class CampManagementApplication {
                 return null;
             }
 
-            String[] subjectIdArray = subjectIds.split(","); // subjectIds를 쉼표로 구분하여 배열로 저장
-            if (subjectIdArray.length < minCount) { // subjectIdArray의 길이가 minCount보다 작으면
+            String[] subjectIdArray = subjectIds.split(",");
+            if (subjectIdArray.length < minCount) {
                 System.out.println(displayType + "은 최소 " + minCount + "개 이상 선택해야 합니다. 다시 시도하세요.");
                 continue;
             }
 
             for (String subjectId : subjectIdArray) {
-                subjectStore.stream() // subjectStore를 stream으로 변환
-                        .filter(subject -> subject.getSubjectId().equals(subjectId.trim()) && subject.getSubjectType().equals(type)) // subject의 subjectId가 subjectId와 같고 subjectType이 type과 같은 것만 찾음
-                        .findFirst() // 찾은 것 중 첫번째 것만 찾음 하나만 찾아도 되는 이유는 subjectId는 중복이 없기 때문 -> 중복이 있으면 findAny()를 사용 -> Optional로 반환 -> ifPresent를 사용하여 값이 있으면 실행
-                        .ifPresent(subject -> { // 값이 있으면 실행
-                            if (selectedSubjects.contains(subject)) { // selectedSubjects에 subject가 포함되어 있으면 -> 중복을 허용하지 않기 위해 contains 메서드를 사용 -> 중복이 있으면 출력
+                subjectStore.stream()
+                        .filter(subject -> subject.getSubjectId().equals(subjectId.trim()) && subject.getSubjectType().equals(type))
+                        .findFirst()
+                        .ifPresent(subject -> {
+                            if (selectedSubjects.contains(subject)) {
                                 System.out.println("이미 입력한 과목입니다: " + subject.getSubjectName());
                             } else {
-                                selectedSubjects.add(subject); // selectedSubjects에 subject를 추가 else문에서 중복이 없으면 추가 = 중복을 허용하지 않기 위해 add 메서드를 사용 >> add 메서드를 사용하면 중복을 허용하지 않음
+                                selectedSubjects.add(subject);
                             }
                         });
             }
 
-            if (selectedSubjects.size() >= minCount) { // selectedSubjects의 크기가 minCount보다 크거나 같으면
-                break; // 반복문 탈출
+            if (selectedSubjects.size() >= minCount) {
+                break;
             } else {
                 System.out.println(displayType + "은 최소 " + minCount + "개 이상 선택해야 합니다. 다시 시도하세요.");
-                selectedSubjects.clear(); // selectedSubjects를 비움 -> 왜??? >>> 다시 선택할 수 있도록 초기화시키려고 초기화 안하면 계속 더해져서 minCount(최소 선택 수)를 벗어날 수 있음
+                selectedSubjects.clear();
             }
-
         }
-        return selectedSubjects; // 선택한 과목을 반환해줌
+
+        return selectedSubjects;
     }
 
     // 수강생 목록 조회
@@ -297,34 +303,261 @@ public class CampManagementApplication {
     }
 
     private static String getStudentId() {
-        System.out.print("\n관리할 수강생의 번호를 입력하시오...");
+        System.out.println("==================================");
+        if (!studentStore.isEmpty()) {
+            for (Student student : studentStore) {
+                System.out.println("[" + student.getStudentId() + "] " + student.getStudentName());
+            }
+        }
+        System.out.print("\n관리할 수강생의 번호를 입력해주세요...");
+        String studentId = sc.next();
+
+        return studentId;
+    }
+
+    private static int getScoreRound() {
+        System.out.print("\n점수를 부여할 시험의 회차를 입력해주세요...");
+        return sc.nextInt();
+    }
+
+    private static String getSubjectId() {
+        System.out.println("==================================");
+        if (!studentStore.isEmpty()) {
+            for (Student student : studentStore) {
+                System.out.println("[" + student.getStudentId() + "] " + student.getStudentName());
+            }
+        }
+        System.out.print("\n관리할 과목의 번호를 입력해주세요...");
         return sc.next();
+    }
+
+    private static int getScoreNum() {
+        System.out.print("\n점수를 부여할 시험의 점수를 입력해주세요...");
+        return sc.nextInt();
     }
 
     // 수강생의 과목별 시험 회차 및 점수 등록
     private static void createScore() {
-        String studentId = getStudentId(); // 관리할 수강생 고유 번호
-        System.out.println("시험 점수를 등록합니다...");
-        // 기능 구현
-        System.out.println("\n점수 등록 성공!");
+        String studentId = getStudentId(); // 관리할 수강생 고유 번호 입력 받기
+        String subjectId = getSubjectId(); // 관리할 과목 ID 입력 받기
+        int scoreRound = getScoreRound(); // 시험 회차 입력 받기
+        int scoreNum = getScoreNum(); // 점수 입력 받기
+        Character scoreGrade = 0; // 등급 변수 초기화
+
+
+        // 중복 확인
+        // 수강생id, 과목id, 회차 같으면 중복
+        boolean isDuplicate = false;    // 중복 체크 변수
+        if (!scoreStore.isEmpty()) {    // scoreStore 가 초기에는 비어있으니 안 비어있으면 중복 검사
+            for (Score score : scoreStore) {
+                if (score.getScoreStudentId().equals(studentId) && score.getScoreSubjectId()
+                        .equals(subjectId) && score.getScoreRound().equals(scoreRound)) {
+                    System.out.println("이미 등록되어 있습니다.");
+                    isDuplicate = true;
+                    break;
+                }
+            }
+        }
+
+        // 필수과목, 선택과목 분류
+        for(Subject subject : subjectStore) {
+            if (subject.getSubjectId().equals(subjectId) && subject.getSubjectType().equals("MANDATORY")) {
+                System.out.println("mandatory");
+                scoreGrade = mainTranslateGrade(scoreNum);
+            } else if (subject.getSubjectId().equals(subjectId) && subject.getSubjectType().equals("CHOICE")) {
+                System.out.println("select");
+                scoreGrade = subTranslateGrade(scoreNum);
+            }
+        }
+
+        // 입력받은 정보로 점수 객체 생성
+        if (!isDuplicate) {
+            Score score = new Score(studentId, subjectId, scoreRound, scoreNum, scoreGrade);
+            scoreStore.add(score);
+            // 저장 확인
+            System.out.println("[수강생ID:" + score.getScoreStudentId() + "] [과목ID:" + score.getScoreSubjectId() +
+                    "] [회차:" + score.getScoreRound() + "] [점수:" + score.getScoreNum() +
+                    "] [등급:" + score.getScoreGrade() + "]");
+            // 점수 등록 로직 구현 (저장소에 추가)
+            System.out.println("시험 점수를 등록했습니다.");
+        }
+
+
+
+
+
     }
 
     // 수강생의 과목별 회차 점수 수정
     private static void updateRoundScoreBySubject() {
-        String studentId = getStudentId(); // 관리할 수강생 고유 번호
+
+        String studentId = getStudentId();// 관리할 수강생 고유 번호
+
+
+        //학생 ID가 있는지 검사
+        boolean studentIdValid = false;
+        for (Score score : scoreStore) {
+            if (score.getScoreStudentId().equals(studentId)) {
+                studentIdValid = true;
+                break;
+            }
+        }
+
+        if (!studentIdValid) {
+            System.out.println("등록된 학생이 아닙니다. 수강생 관리 페이지로 이동합니다.");
+            displayStudentView();
+            return;
+
+        }
+
         // 기능 구현 (수정할 과목 및 회차, 점수)
+
         System.out.println("시험 점수를 수정합니다...");
-        // 기능 구현
-        System.out.println("\n점수 수정 성공!");
-    }
+
+        // 점수 수정 로직
+
+        System.out.println("수정할 과목의 고유 번호 입력 :");
+        String scoreSubjectId = sc.next();
+
+
+        System.out.println("수정할 과목의 회차를 입력 : ");
+        Integer scoreRound = sc.nextInt();
+        System.out.println("수정할 과목의 점수를 입력 : ");
+        Integer score = sc.nextInt();
+
+
+        boolean roundFound = false;
+        boolean scoreUpdated = false;
+
+        for (Score score2 : scoreStore) {
+            if (score2.getScoreStudentId().equals(studentId) &&
+                    score2.getScoreSubjectId().equals(scoreSubjectId) &&
+                    score2.getScoreRound() == scoreRound) {
+
+                // 회차가 일치하고 점수가 동일하다면 수정할 필요 없음
+                if (score2.getScoreNum() == score) {
+                    System.out.println("점수가 기존과 동일합니다. 수정할 필요가 없습니다.");
+                    return; //점수를 수정할 필요가 없어서 함수 종료
+                }
+                // 고유번호들이 일치하고 회차가 일치하고 점수가 다르다면 점수 수정
+                System.out.println("수정되기 전 점수 : " + score2.getScoreNum());
+                score2.setScoreNum(score);
+                scoreUpdated = true;
+                roundFound = true;
+                System.out.println("수정 된 점수 : " + score2.getScoreNum());
+                break;
+            }
+        }
+
+        //회차별 점수가 등록되지 않았을 경우
+        if (!roundFound) {
+            System.out.println("등록된 회차가 없습니다. 점수 관리 페이지로 이동합니다.");
+            displayScoreView();
+        } else if (scoreUpdated) {
+            System.out.println("점수 수정 성공!");
+        } else {
+            System.out.println("점수 수정 실패 해당 회차에 점수가 존재하지 않습니다. 점수 관리 페이지로 이동합니다.");
+            displayScoreView();
+        }
+
+
+    }// 기능 구현
 
     // 수강생의 특정 과목 회차별 등급 조회
     private static void inquireRoundGradeBySubject() {
-        String studentId = getStudentId(); // 관리할 수강생 고유 번호
+
+        Scanner sc = new Scanner(System.in);
+
+        // 학생 id
+        String studentId = getStudentId();
+        // 학생 이름
+        String studentName =getStudentName();
+
+        // 과목 id
+        System.out.print("조회할 과목 ID를 입력하시오: ");
+        String subjectId = sc.nextLine();
+
         // 기능 구현 (조회할 특정 과목)
+
+
+        boolean foundScores=false;
+
+
+        Integer scoreRound = 1;
+
         System.out.println("회차별 등급을 조회합니다...");
-        // 기능 구현
-        System.out.println("\n등급 조회 성공!");
+
+        //
+        // 학생 ID -> 출력 완료
+        // 과목 ID -> 출력 완료
+        // 회차 -> 출력 완료 1
+        // 등급 ->  A
+
+        for (Score needScore : scoreStore) {
+
+            if (needScore.getScoreStudentId().equals(studentId) && needScore.getScoreSubjectId().equals(subjectId) ) {
+                foundScores= true;
+                System.out.println("고유번호: [" + studentId + "] ,"+"학생 이름 : "+studentName);
+                System.out.println("회차: " + needScore.getScoreRound() + ", 등급: " + needScore.getScoreGrade());
+            }
+        }
+
+        if (!foundScores) {
+            System.out.println("해당 과목에 대한 점수가 없습니다.");
+        } else {
+            System.out.println("\n등급 조회 성공!");
+        }
+    }
+    public static char mainTranslateGrade(int score) {
+        char scoreGrade;
+        if (95 <= score && score <= 100) {
+            scoreGrade = 'A';
+        } else if (90 <= score && score <= 94) {
+            scoreGrade = 'B';
+        } else if (80 <= score && score <= 89) {
+            scoreGrade = 'C';
+        } else if (70 <= score && score <= 79) {
+            scoreGrade = 'D';
+        } else if (60 <= score && score <= 69) {
+            scoreGrade = 'F';
+        } else if (score < 60) {
+            scoreGrade = 'N';
+        } else {
+            throw new RuntimeException();
+        }
+        return scoreGrade;
     }
 
+    public static char subTranslateGrade(int score) {
+        char scoreGrade;
+        if (90 <= score && score <= 100) {
+            scoreGrade = 'A';
+        } else if (80 <= score && score <= 89) {
+            scoreGrade = 'B';
+        } else if (70 <= score && score <= 79) {
+            scoreGrade = 'C';
+        } else if (60 <= score && score <= 69) {
+            scoreGrade = 'D';
+        } else if (50 <= score && score <= 59) {
+            scoreGrade = 'F';
+        } else if (score < 50) {
+            scoreGrade = 'N';
+        } else {
+            throw new RuntimeException();
+        }
+        return scoreGrade;
+    }
+}
+class Solution {
+    public int[] solution(long n) {
+        String i = Long.toString(n);
+        int[] answer = new int[i.length()];
+
+        for (int j = 0; j < i.length() ; j++) {
+            answer[j] = (int) n%10;
+            n = n/10;
+        }
+
+        return answer;
+    }
 }
