@@ -197,7 +197,7 @@ public class CampManagementApplication {
         }
         return studentName;
     }
-
+//test
     private static Set<Subject> getSubjects(String type, int minCount) {
         Set<Subject> selectedSubjects = new LinkedHashSet<>(); // 중복을 허용하지 않는 Set 인터페이스를 구현한 LinkedHashSet 인스턴스 생성 -> 선택한 과목을 저장할 selectedSubjects + LinkedHashSet를 이용해 저장 순서를 유지하면서 중복방지
         String displayType = type.equals(SUBJECT_TYPE_MANDATORY) ? "필수과목" : "선택과목"; // type이 SUBJECT_TYPE_MANDATORY 이면 "필수과목" 아니면 "선택과목"을 displayType에 저장, equals 메서드를 사용해서 스트링만으로도
