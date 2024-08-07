@@ -41,12 +41,15 @@ public class CampManagementApplication {
     private static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
+
         setInitData();
+
         try {
             displayMainView();
         } catch (Exception e) {
             System.out.println("\n오류 발생!\n프로그램을 종료합니다.");
         }
+
     }
 
     // 초기 데이터 생성
@@ -308,6 +311,9 @@ private static void inquireStudent() {
     private static void createScore() {
         String studentId = getStudentId(); // 관리할 수강생 고유 번호
         System.out.println("시험 점수를 등록합니다...");
+        scoreStore.add(new Score("ST1", "SU1", 1, 1, 'A'));
+        scoreStore.add(new Score("ST1", "SU2", 2, 2, 'B'));
+        scoreStore.add(new Score("ST1", "SU3", 3, 3, 'C'));
         // 기능 구현
         System.out.println("\n점수 등록 성공!");
     }
@@ -323,11 +329,48 @@ private static void inquireStudent() {
 
     // 수강생의 특정 과목 회차별 등급 조회
     private static void inquireRoundGradeBySubject() {
-        String studentId = getStudentId(); // 관리할 수강생 고유 번호
+
+        Scanner sc = new Scanner(System.in);
+
+        // 학생 id
+        String studentId = getStudentId();
+        // 학생 이름
+        String studentName =getStudentName();
+
+        // 과목 id
+        System.out.print("조회할 과목 ID를 입력하시오: ");
+        String subjectId = sc.nextLine();
+
         // 기능 구현 (조회할 특정 과목)
+
+
+        boolean foundScores=false;
+
+
+        Integer scoreRound = 1;
+
         System.out.println("회차별 등급을 조회합니다...");
-        // 기능 구현
-        System.out.println("\n등급 조회 성공!");
+
+        //
+        // 학생 ID -> 출력 완료
+        // 과목 ID -> 출력 완료
+        // 회차 -> 출력 완료 1
+        // 등급 ->  A
+
+        for (Score needScore : scoreStore) {
+
+            if (needScore.getScoreStudentId().equals(studentId) && needScore.getScoreSubjectId().equals(subjectId) ) {
+                foundScores= true;
+                System.out.println("고유번호: [" + studentId + "] ,"+"학생 이름 : "+studentName);
+                System.out.println("회차: " + needScore.getScoreRound() + ", 등급: " + needScore.getScoreGrade());
+            }
+        }
+
+        if (!foundScores) {
+            System.out.println("해당 과목에 대한 점수가 없습니다.");
+        } else {
+            System.out.println("\n등급 조회 성공!");
+        }
     }
 
 }
