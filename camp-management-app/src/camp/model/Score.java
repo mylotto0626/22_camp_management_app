@@ -20,6 +20,10 @@ public class Score {
         this.scoreNum = scoreNum;
     }
 
+    public void setScoreGrade(Character scoreGrade) {
+        this.scoreGrade = scoreGrade;
+    }
+
     // Getter
     public String getScoreId() {
         return scoreId;

@@ -393,6 +393,7 @@ public class CampManagementApplication {
 
         String studentId = getStudentId();// 관리할 수강생 고유 번호
 
+        char scoreGrade = '0';
 
         //학생 ID가 있는지 검사
         boolean studentIdValid = false;
@@ -409,16 +410,13 @@ public class CampManagementApplication {
             return;
 
         }
+        String scoreSubjectId = getSubjectId();
 
         // 기능 구현 (수정할 과목 및 회차, 점수)
 
         System.out.println("시험 점수를 수정합니다...");
 
         // 점수 수정 로직
-
-        System.out.println("수정할 과목의 고유 번호 입력 :");
-        String scoreSubjectId = sc.next();
-
 
         System.out.println("수정할 과목의 회차를 입력 : ");
         Integer scoreRound = sc.nextInt();
@@ -442,9 +440,20 @@ public class CampManagementApplication {
                 // 고유번호들이 일치하고 회차가 일치하고 점수가 다르다면 점수 수정
                 System.out.println("수정되기 전 점수 : " + score2.getScoreNum());
                 score2.setScoreNum(score);
+                for (Subject subject : subjectStore) {
+                    if (subject.getSubjectId().equals(scoreSubjectId) && subject.getSubjectType().equals("MANDATORY")) {
+
+                        scoreGrade = mainTranslateGrade(score);
+                    } else if (subject.getSubjectId().equals(scoreSubjectId) && subject.getSubjectType().equals("CHOICE")) {
+
+                        scoreGrade = subTranslateGrade(score);
+                    }
+                }
+                score2.setScoreGrade(scoreGrade);
                 scoreUpdated = true;
                 roundFound = true;
                 System.out.println("수정 된 점수 : " + score2.getScoreNum());
+                System.out.println("수정 된 등급 : " + score2.getScoreGrade());
                 break;
             }
         }
