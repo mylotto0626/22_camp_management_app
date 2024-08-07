@@ -16,6 +16,10 @@ public class Score {
         this.scoreGrade = scoreGrade;
     }
 
+    public void setScoreNum(Integer scoreNum) {
+        this.scoreNum = scoreNum;
+    }
+
     // Getter
     public String getScoreId() {
         return scoreId;
@@ -40,7 +44,6 @@ public class Score {
     public Character getScoreGrade() {
         return scoreGrade;
     }
-
 
 
 }

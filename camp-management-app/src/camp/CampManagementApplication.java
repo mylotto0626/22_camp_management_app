@@ -4,13 +4,10 @@ import camp.model.Score;
 import camp.model.Student;
 import camp.model.Subject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 
 // dev
+
 /**
  * Notification
  * Java, 객체지향이 아직 익숙하지 않은 분들은 위한 소스코드 틀입니다.
@@ -20,23 +17,20 @@ import java.util.HashSet;
  * 구현에 도움을 주기위한 Base 프로젝트입니다. 자유롭게 이용해주세요!
  */
 public class CampManagementApplication {
+    private static final String INDEX_TYPE_STUDENT = "ST";
+    private static final String INDEX_TYPE_SUBJECT = "SU";
+    private static final String INDEX_TYPE_SCORE = "SC";
     // 데이터 저장소
     private static List<Student> studentStore;
     private static List<Subject> subjectStore;
     private static List<Score> scoreStore;
-
     // 과목 타입
     private static String SUBJECT_TYPE_MANDATORY = "MANDATORY";
     private static String SUBJECT_TYPE_CHOICE = "CHOICE";
-
     // index 관리 필드
     private static int studentIndex;
-    private static final String INDEX_TYPE_STUDENT = "ST";
     private static int subjectIndex;
-    private static final String INDEX_TYPE_SUBJECT = "SU";
     private static int scoreIndex;
-    private static final String INDEX_TYPE_SCORE = "SC";
-
     // 스캐너
     private static Scanner sc = new Scanner(System.in);
 
@@ -352,12 +346,12 @@ public class CampManagementApplication {
                     System.out.println("이미 등록되어 있습니다.");
                     isDuplicate = true;
                     break;
-                    }
                 }
             }
+        }
 
         // 필수과목, 선택과목 분류
-        for(Subject subject : subjectStore) {
+        for (Subject subject : subjectStore) {
             if (subject.getSubjectId().equals(subjectId) && subject.getSubjectType().equals("MANDATORY")) {
                 System.out.println("mandatory");
                 scoreGrade = mainTranslateGrade(scoreNum);
@@ -380,19 +374,82 @@ public class CampManagementApplication {
         }
 
 
-
-
-
     }
 
     // 수강생의 과목별 회차 점수 수정
     private static void updateRoundScoreBySubject() {
-        String studentId = getStudentId(); // 관리할 수강생 고유 번호
+
+        String studentId = getStudentId();// 관리할 수강생 고유 번호
+
+
+        //학생 ID가 있는지 검사
+        boolean studentIdValid = false;
+        for (Score score : scoreStore) {
+            if (score.getScoreStudentId().equals(studentId)) {
+                studentIdValid = true;
+                break;
+            }
+        }
+
+        if (!studentIdValid) {
+            System.out.println("등록된 학생이 아닙니다. 수강생 관리 페이지로 이동합니다.");
+            displayStudentView();
+            return;
+
+        }
+
         // 기능 구현 (수정할 과목 및 회차, 점수)
+
         System.out.println("시험 점수를 수정합니다...");
-        // 기능 구현
-        System.out.println("\n점수 수정 성공!");
-    }
+
+        // 점수 수정 로직
+
+        System.out.println("수정할 과목의 고유 번호 입력 :");
+        String scoreSubjectId = sc.next();
+
+
+        System.out.println("수정할 과목의 회차를 입력 : ");
+        Integer scoreRound = sc.nextInt();
+        System.out.println("수정할 과목의 점수를 입력 : ");
+        Integer score = sc.nextInt();
+
+
+        boolean roundFound = false;
+        boolean scoreUpdated = false;
+
+        for (Score score2 : scoreStore) {
+            if (score2.getScoreStudentId().equals(studentId) &&
+                    score2.getScoreSubjectId().equals(scoreSubjectId) &&
+                    score2.getScoreRound() == scoreRound) {
+
+                // 회차가 일치하고 점수가 동일하다면 수정할 필요 없음
+                if (score2.getScoreNum() == score) {
+                    System.out.println("점수가 기존과 동일합니다. 수정할 필요가 없습니다.");
+                    return; //점수를 수정할 필요가 없어서 함수 종료
+                }
+                // 고유번호들이 일치하고 회차가 일치하고 점수가 다르다면 점수 수정
+                System.out.println("수정되기 전 점수 : " + score2.getScoreNum());
+                score2.setScoreNum(score);
+                scoreUpdated = true;
+                roundFound = true;
+                System.out.println("수정 된 점수 : " + score2.getScoreNum());
+                break;
+            }
+        }
+
+        //회차별 점수가 등록되지 않았을 경우
+        if (!roundFound) {
+            System.out.println("등록된 회차가 없습니다. 점수 관리 페이지로 이동합니다.");
+            displayScoreView();
+        } else if (scoreUpdated) {
+            System.out.println("점수 수정 성공!");
+        } else {
+            System.out.println("점수 수정 실패 해당 회차에 점수가 존재하지 않습니다. 점수 관리 페이지로 이동합니다.");
+            displayScoreView();
+        }
+
+
+    }// 기능 구현
 
     // 수강생의 특정 과목 회차별 등급 조회
     private static void inquireRoundGradeBySubject() {
@@ -443,14 +500,15 @@ public class CampManagementApplication {
         return scoreGrade;
     }
 }
+
 class Solution {
     public int[] solution(long n) {
         String i = Long.toString(n);
         int[] answer = new int[i.length()];
 
-        for (int j = 0; j < i.length() ; j++) {
-            answer[j] = (int) n%10;
-            n = n/10;
+        for (int j = 0; j < i.length(); j++) {
+            answer[j] = (int) n % 10;
+            n = n / 10;
         }
 
         return answer;
