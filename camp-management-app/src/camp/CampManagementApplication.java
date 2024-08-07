@@ -240,7 +240,7 @@ public class CampManagementApplication {
             }
 
         }
-        return selectedSubjects; // 선택한 과목을 반환해쥼
+        return selectedSubjects; // 선택한 과목을 반환해줌
     }
 
     // 수강생 목록 조회
