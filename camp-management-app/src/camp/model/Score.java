@@ -93,4 +93,3 @@ public class Score {
 //        System.out.println("회차: " + score.getRound() + ", 점수: " + score.getScore() + ", 등급: " + score.getGrade());
 //        }
 //        }
-

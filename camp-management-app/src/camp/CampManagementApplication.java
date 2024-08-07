@@ -7,7 +7,6 @@ import camp.model.Subject;
 import java.util.*;
 
 // dev
-
 /**
  * Notification
  * Java, 객체지향이 아직 익숙하지 않은 분들은 위한 소스코드 틀입니다.
@@ -24,17 +23,22 @@ public class CampManagementApplication {
     private static List<Student> studentStore;
     private static List<Subject> subjectStore;
     private static List<Score> scoreStore;
+
     // 과목 타입
     private static String SUBJECT_TYPE_MANDATORY = "MANDATORY";
     private static String SUBJECT_TYPE_CHOICE = "CHOICE";
+
     // index 관리 필드
     private static int studentIndex;
     private static int subjectIndex;
     private static int scoreIndex;
+
+
     // 스캐너
     private static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
+        // 학생 정보 조회
         setInitData();
         try {
             displayMainView();
@@ -346,12 +350,12 @@ public class CampManagementApplication {
                     System.out.println("이미 등록되어 있습니다.");
                     isDuplicate = true;
                     break;
+                    }
                 }
             }
-        }
 
         // 필수과목, 선택과목 분류
-        for (Subject subject : subjectStore) {
+        for(Subject subject : subjectStore) {
             if (subject.getSubjectId().equals(subjectId) && subject.getSubjectType().equals("MANDATORY")) {
                 System.out.println("mandatory");
                 scoreGrade = mainTranslateGrade(scoreNum);
@@ -372,6 +376,9 @@ public class CampManagementApplication {
             // 점수 등록 로직 구현 (저장소에 추가)
             System.out.println("시험 점수를 등록했습니다.");
         }
+
+
+
 
 
     }
@@ -500,15 +507,14 @@ public class CampManagementApplication {
         return scoreGrade;
     }
 }
-
 class Solution {
     public int[] solution(long n) {
         String i = Long.toString(n);
         int[] answer = new int[i.length()];
 
-        for (int j = 0; j < i.length(); j++) {
-            answer[j] = (int) n % 10;
-            n = n / 10;
+        for (int j = 0; j < i.length() ; j++) {
+            answer[j] = (int) n%10;
+            n = n/10;
         }
 
         return answer;
