@@ -167,7 +167,7 @@ public class CampManagementApplication {
         }
     }
 
-    // 수강생 등록
+    // 수강생 등록 0532
     private static void createStudent() {
         System.out.println("\n수강생을 등록합니다...");
         String studentName = getStudentName(); // 해석하면 학생 이름을 가져옴 -> getStudentName() 메서드를 호출하여 학생 이름을 가져옴
