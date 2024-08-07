@@ -1,8 +1,5 @@
 package camp.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Subject {
     private String subjectId;
     private String subjectName;

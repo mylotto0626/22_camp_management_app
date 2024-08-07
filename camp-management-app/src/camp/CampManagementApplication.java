@@ -6,7 +6,6 @@ import camp.model.Subject;
 
 import java.util.*;
 
-// dev
 /**
  * Notification
  * Java, 객체지향이 아직 익숙하지 않은 분들은 위한 소스코드 틀입니다.
@@ -15,6 +14,7 @@ import java.util.*;
  * 프로젝트 구조를 변경하거나 기능을 추가해도 괜찮습니다!
  * 구현에 도움을 주기위한 Base 프로젝트입니다. 자유롭게 이용해주세요!
  */
+
 public class CampManagementApplication {
     private static final String INDEX_TYPE_STUDENT = "ST";
     private static final String INDEX_TYPE_SUBJECT = "SU";
@@ -117,8 +117,6 @@ public class CampManagementApplication {
         }
     }
 
-    //연습
-
     private static void displayMainView() throws InterruptedException {
         boolean flag = true;
         while (flag) {
@@ -204,7 +202,7 @@ public class CampManagementApplication {
     }
 
     private static Set<Subject> getSubjects(String type, int minCount) {
-        Set<Subject> selectedSubjects = new HashSet<>();
+        Set<Subject> selectedSubjects = new LinkedHashSet<>();
         String displayType = type.equals(SUBJECT_TYPE_MANDATORY) ? "필수과목" : "선택과목"; // ?는 삼항연산자, type이 SUBJECT_TYPE_MANDATORY 이면 "필수과목" 아니면 "선택과목"을 displayType에 저장
         System.out.println("\n" + displayType + "을 선택하세요. (취소: 0)");
         subjectStore.stream()
@@ -271,7 +269,6 @@ public class CampManagementApplication {
             System.out.println("==================================");
         }
 
-
         System.out.println("**********************************");
         System.out.println("수강생 목록 조회 성공!");
         System.out.println("**********************************");
@@ -309,6 +306,7 @@ public class CampManagementApplication {
                 System.out.println("[" + student.getStudentId() + "] " + student.getStudentName());
             }
         }
+
         System.out.print("\n관리할 수강생의 번호를 입력해주세요...");
         String studentId = sc.next();
 
@@ -316,6 +314,7 @@ public class CampManagementApplication {
     }
 
     private static int getScoreRound() {
+        System.out.println("==================================");
         System.out.print("\n점수를 부여할 시험의 회차를 입력해주세요...");
         return sc.nextInt();
     }
@@ -323,10 +322,18 @@ public class CampManagementApplication {
     private static String getSubjectId() {
         System.out.println("==================================");
         if (!studentStore.isEmpty()) {
-            for (Student student : studentStore) {
-                System.out.println("[" + student.getStudentId() + "] " + student.getStudentName());
+            for (Student student : studentStore) { // studentStore를 루프를 돌면서 student에 저장
+                System.out.println("==================================");
+                System.out.println("고유번호 : " + "[" + student.getStudentId() + "] " + "이름 : " + student.getStudentName());
+                System.out.println("과목 목록 :");
+                for (Subject subject : student.getSubjects()) { // 과목은 student의 getSubjects를 루프를 돌면서 subject에 저장 출력이 제대로 안되는 버그 방지를 위해 2중으로 루프를 돌면서 출력
+                    String subjectType = subject.getSubjectType().equals(SUBJECT_TYPE_MANDATORY) ? "필수과목" : "선택과목"; // subjectType이 SUBJECT_TYPE_MANDATORY 이면 필수과목 아니면 선택과목을 subjectType에 저장
+                    System.out.println("  [" + subject.getSubjectId() + "] " + subject.getSubjectName() + " (" + subjectType + ")");
+                }
+                System.out.println("==================================");
             }
         }
+
         System.out.print("\n관리할 과목의 번호를 입력해주세요...");
         return sc.next();
     }
@@ -362,10 +369,8 @@ public class CampManagementApplication {
         // 필수과목, 선택과목 분류
         for(Subject subject : subjectStore) {
             if (subject.getSubjectId().equals(subjectId) && subject.getSubjectType().equals("MANDATORY")) {
-                System.out.println("mandatory");
                 scoreGrade = mainTranslateGrade(scoreNum);
             } else if (subject.getSubjectId().equals(subjectId) && subject.getSubjectType().equals("CHOICE")) {
-                System.out.println("select");
                 scoreGrade = subTranslateGrade(scoreNum);
             }
         }
@@ -381,10 +386,6 @@ public class CampManagementApplication {
             // 점수 등록 로직 구현 (저장소에 추가)
             System.out.println("시험 점수를 등록했습니다.");
         }
-
-
-
-
 
     }
 
@@ -470,7 +471,7 @@ public class CampManagementApplication {
         }
 
 
-    }// 기능 구현
+    }
 
     // 수강생의 특정 과목 회차별 등급 조회
     private static void inquireRoundGradeBySubject() {
@@ -479,34 +480,20 @@ public class CampManagementApplication {
 
         // 학생 id
         String studentId = getStudentId();
-        // 학생 이름
-        String studentName =getStudentName();
 
         // 과목 id
         System.out.print("조회할 과목 ID를 입력하시오: ");
         String subjectId = sc.nextLine();
 
-        // 기능 구현 (조회할 특정 과목)
-
-
         boolean foundScores=false;
 
-
-        Integer scoreRound = 1;
-
         System.out.println("회차별 등급을 조회합니다...");
-
-        //
-        // 학생 ID -> 출력 완료
-        // 과목 ID -> 출력 완료
-        // 회차 -> 출력 완료 1
-        // 등급 ->  A
 
         for (Score needScore : scoreStore) {
 
             if (needScore.getScoreStudentId().equals(studentId) && needScore.getScoreSubjectId().equals(subjectId) ) {
                 foundScores= true;
-                System.out.println("고유번호: [" + studentId + "] ,"+"학생 이름 : "+studentName);
+                System.out.println("고유번호: [" + studentId + "]");
                 System.out.println("회차: " + needScore.getScoreRound() + ", 등급: " + needScore.getScoreGrade());
             }
         }
@@ -555,18 +542,5 @@ public class CampManagementApplication {
             throw new RuntimeException();
         }
         return scoreGrade;
-    }
-}
-class Solution {
-    public int[] solution(long n) {
-        String i = Long.toString(n);
-        int[] answer = new int[i.length()];
-
-        for (int j = 0; j < i.length() ; j++) {
-            answer[j] = (int) n%10;
-            n = n/10;
-        }
-
-        return answer;
     }
 }
