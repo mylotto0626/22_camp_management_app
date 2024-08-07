@@ -7,6 +7,7 @@ import camp.model.Subject;
 import java.util.*;
 
 // dev
+
 /**
  * Notification
  * Java, 객체지향이 아직 익숙하지 않은 분들은 위한 소스코드 틀입니다.
@@ -116,6 +117,7 @@ public class CampManagementApplication {
             }
         }
     }
+
     private static void addDummyStudent() {
         Student student1 = new Student(sequence(INDEX_TYPE_STUDENT), "홍길동");
         student1.addSubject(subjectStore.get(0));
@@ -336,27 +338,35 @@ public class CampManagementApplication {
     }
 
 
-
     // 수강생의 과목별 회차 점수 수정
     private static void updateRoundScoreBySubject() {
 
         String studentId = getStudentId();// 관리할 수강생 고유 번호
 
+        //더미 데이터
+        Score score3 = new Score("ST1", "SU1", 1, 100, 'A');
+        scoreStore.add(score3);
+
+        //학생 ID가 있는지 검사
+        boolean studentIdValid = false;
+        for (Score score : scoreStore) {
+            if (score.getScoreStudentId().equals(studentId)) {
+                studentIdValid = true;
+                break;
+            }
+        }
+
+        if (!studentIdValid) {
+            System.out.println("등록된 학생이 아닙니다. 수강생 관리 페이지로 이동합니다.");
+            displayStudentView();
+            return;
+
+        }
+
         // 기능 구현 (수정할 과목 및 회차, 점수)
 
         System.out.println("시험 점수를 수정합니다...");
 
-        // 수정할 사람 필수 과목 , 선택과목 조회
-
-        for (Student student1 : studentStore) {
-            if(studentId.equals(student1.getStudentId())) {
-                System.out.println("고유번호 : " + "[" + student1.getStudentId() + "] " + "이름 : " + student1.getStudentName());
-                for (Subject subject : student1.getSubjects()) {
-                    String subjectType = subject.getSubjectType().equals(SUBJECT_TYPE_MANDATORY) ? "필수과목" : "선택과목";
-                    System.out.println("  [" + subject.getSubjectId() + "] " + subject.getSubjectName() + " (" + subjectType + ")");
-                }
-            }
-        }
         // 점수 수정 로직
         // 수정할 과목의 고유번호 입력
         // 수정할 과목의 회차를 입력
@@ -374,45 +384,60 @@ public class CampManagementApplication {
         // 수정 할 떄 필요한거 1회차 50 점을 맞았어 이걸 수정을 할 때 50점으로 넣으면 중복되니까 수정안해도 된다.
         // 수정 할 때 필요한거 1회차 검색을 했는데 없어 이 떄 점수가 없다.
         // 검색을 했는데 회차가 없어 그러면 너 다시 등록해
+        //
 
 
         System.out.println("수정할 과목의 고유 번호 입력 :");
         String scoreSubjectId = sc.next();
+
+        if (!score3.getScoreSubjectId().equals(scoreSubjectId)) {
+            System.out.println("잘못된 과목의 고유번호를 입력했습니다. 조회 후 다시 이용해주세요");
+            displayStudentView();
+            return;
+        }
+
         System.out.println("수정할 과목의 회차를 입력 : ");
         Integer scoreRound = sc.nextInt();
         System.out.println("수정할 과목의 점수를 입력 : ");
         Integer score = sc.nextInt();
 
 
-            Score score3 = new Score("ST1","SU1",1,100,'A');
-            scoreStore.add(score3);
-            for(Score score5 : scoreStore){
-                System.out.println("회차별 점수 : "+score5.getScoreNum());
-            }
+        boolean roundFound = false;
+        boolean scoreUpdated = false;
 
-            if(!scoreStore.isEmpty()) {
-                for (Score score2 : scoreStore) {
-                    if (score2.getScoreStudentId().equals(studentId) && score2.getScoreSubjectId().equals(scoreSubjectId)) {
+        for (Score score2 : scoreStore) {
+            if (score2.getScoreStudentId().equals(studentId) &&
+                    score2.getScoreSubjectId().equals(scoreSubjectId) &&
+                    Objects.equals(score2.getScoreRound(), scoreRound)) {
 
-                        if (Objects.equals(score2.getScoreRound(), scoreRound)) {
-
-                            // 이 모든 if문에 일치하면 점수 수정을 한다.
-                            score2.setScoreNum(score);
-                            System.out.println("수정 된 점수 : "+score2.getScoreNum());
-                        }
-
-
-                    }
+                // 회차가 일치하고 점수가 동일하다면 수정할 필요 없음
+                if (Objects.equals(score2.getScoreNum(), score)) {
+                    System.out.println("점수가 기존과 동일합니다. 수정할 필요가 없습니다.");
+                    return; //점수를 수정할 필요가 없어서 함수 종료
                 }
-            }else{
-                System.out.println("회차별 점수가 없습니다. 다시 입력해주세요");
+                // 고유번호들이 일치하고 회차가 일치하고 점수가 다르다면 점수 수정
+                System.out.println("수정되기 전 점수 : " + score2.getScoreNum());
+                score2.setScoreNum(score);
+                scoreUpdated = true;
+                roundFound = true;
+                System.out.println("수정 된 점수 : " + score2.getScoreNum());
+                break;
             }
+        }
+
+        //회차별 점수가 등록되지 않았을 경우
+        if (!roundFound) {
+            System.out.println("등록된 회차가 없습니다. 점수 관리 페이지로 이동합니다.");
+            displayScoreView();
+        } else if (scoreUpdated) {
+            System.out.println("점수 수정 성공!");
+        } else {
+            System.out.println("점수 수정 실패 해당 회차에 점수가 존재하지 않습니다. 점수 관리 페이지로 이동합니다.");
+            displayScoreView();
+        }
 
 
-        System.out.println("점수 수정 성공!");
-        }// 기능 구현
-
-
+    }// 기능 구현
 
 
     // 수강생의 특정 과목 회차별 등급 조회
