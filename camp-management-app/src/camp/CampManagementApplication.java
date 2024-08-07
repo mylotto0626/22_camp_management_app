@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
-// dev
 /**
  * Notification
  * Java, 객체지향이 아직 익숙하지 않은 분들은 위한 소스코드 틀입니다.
@@ -41,6 +41,7 @@ public class CampManagementApplication {
     private static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
+        // 학생 정보 조회
         setInitData();
         try {
             displayMainView();
@@ -92,7 +93,6 @@ public class CampManagementApplication {
                         sequence(INDEX_TYPE_SUBJECT),
                         "Redis",
                         SUBJECT_TYPE_CHOICE
-                        // dddd
                 ),
                 new Subject(
                         sequence(INDEX_TYPE_SUBJECT),
@@ -121,8 +121,6 @@ public class CampManagementApplication {
         }
     }
 
-    //연습
-
     private static void displayMainView() throws InterruptedException {
         boolean flag = true;
         while (flag) {
@@ -142,7 +140,6 @@ public class CampManagementApplication {
                     System.out.println("잘못된 입력입니다.\n되돌아갑니다!");
                     Thread.sleep(2000);
                 }
-
             }
         }
         System.out.println("프로그램을 종료합니다.");

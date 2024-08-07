@@ -27,4 +27,8 @@ public class Subject {
         return subjectType;
     }
 
+    public String toString() {
+        return "선택할 필수 과목: " + subjectType + ", " + subjectName;
+    }
+
 }

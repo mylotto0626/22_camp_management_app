@@ -31,6 +31,19 @@ public class Student {
         return studentName;
     }
 
+    // Optional: Setter
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
+    public String toString() {
+        return "학생 ID: " + studentId + ", 이름: " + studentName;
+    }
+
     public List<Subject> getSubjects() {
         return subjects;
     }
