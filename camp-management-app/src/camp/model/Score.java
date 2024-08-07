@@ -2,74 +2,23 @@ package camp.model;
 
 public class Score {
     private String scoreId; // 점수 ID
-    private Integer scoreNum;
+    private Integer scoreNum; // 점수
     private Integer scoreRound; // 점수 회차 변수   ????? = xxxround
     private Character scoreGrade; // 점수 등급 변수
     private String scoreStudentId; // 수강생 ID
     private String scoreSubjectId; // 과목 ID
 
     public Score(String scoreStudentId, String scoreSubjectId, Integer scoreRound, Integer scoreNum, Character scoreGrade) {
-        this.scoreNum = scoreNum;
+        this.scoreStudentId = scoreStudentId;
         this.scoreSubjectId = scoreSubjectId;
-      this.scoreStudentId = scoreStudentId;
         this.scoreRound = scoreRound;
+        this.scoreNum = scoreNum;
+        this.scoreGrade = scoreGrade;
     }
 
     // Getter
     public String getScoreId() {
         return scoreId;
-    }
-
-    public void setScoreNum(Integer scoreNum) {
-        this.scoreNum = scoreNum;
-    }
-
-
-
-    public char mainTranslateGrade(int score) {
-        if (95 <= score && score <= 100) {
-            scoreGrade = 'A';
-        } else if (90 <= score && score <= 94) {
-            scoreGrade = 'B';
-        } else if (80 <= score && score <= 89) {
-            scoreGrade = 'C';
-        } else if (70 <= score && score <= 79) {
-            scoreGrade = 'D';
-        } else if (60 <= score && score <= 69) {
-            scoreGrade = 'F';
-        } else if (score < 60) {
-            scoreGrade = 'N';
-        }
-        return scoreGrade;
-    }
-
-    public char subTranslateGrade(int score) {
-        if (90 <= score && score <= 100) {
-            scoreGrade = 'A';
-        } else if (80 <= score && score <= 89) {
-            scoreGrade = 'B';
-        } else if (70 <= score && score <= 79) {
-            scoreGrade = 'C';
-        } else if (60 <= score && score <= 69) {
-            scoreGrade = 'D';
-        } else if (50 <= score && score <= 59) {
-            scoreGrade = 'F';
-        } else if (score < 50) {
-            scoreGrade = 'N';
-        }
-        return scoreGrade;
-    }
-
-    public Integer getScoreNum() {
-        return scoreNum;
-    }
-
-    public Integer getScoreRound() {
-        return scoreRound;
-    }
-
-    public Character getScoreGrade() {
-        return scoreGrade;
     }
 
     public String getScoreStudentId() {
@@ -79,6 +28,21 @@ public class Score {
     public String getScoreSubjectId() {
         return scoreSubjectId;
     }
+
+    public Integer getScoreRound() {
+        return scoreRound;
+    }
+
+    public Integer getScoreNum() {
+        return scoreNum;
+    }
+
+    public Character getScoreGrade() {
+        return scoreGrade;
+    }
+
+
+
 }
 
 // 필드
@@ -126,3 +90,4 @@ public class Score {
 //        System.out.println("회차: " + score.getRound() + ", 점수: " + score.getScore() + ", 등급: " + score.getGrade());
 //        }
 //        }
+

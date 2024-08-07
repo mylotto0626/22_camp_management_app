@@ -4,10 +4,13 @@ import camp.model.Score;
 import camp.model.Student;
 import camp.model.Subject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.HashSet;
 
 // dev
-
 /**
  * Notification
  * Java, 객체지향이 아직 익숙하지 않은 분들은 위한 소스코드 틀입니다.
@@ -118,6 +121,7 @@ public class CampManagementApplication {
         }
     }
 
+    //연습
 
     private static void displayMainView() throws InterruptedException {
         boolean flag = true;
@@ -153,7 +157,6 @@ public class CampManagementApplication {
             System.out.println("2. 수강생 목록 조회");
             System.out.println("3. 메인 화면 이동");
             System.out.print("관리 항목을 선택하세요...");
-
             int input = sc.nextInt();
 
             switch (input) {
@@ -259,7 +262,7 @@ public class CampManagementApplication {
         for (Student student : studentStore) {
             System.out.println("==================================");
             System.out.println("고유번호 : " + "[" + student.getStudentId() + "] " + "이름 : " + student.getStudentName());
-            System.out.println("과목 목록 :"); //각 과목의 1~10회차 점수
+            System.out.println("과목 목록 :");
             for (Subject subject : student.getSubjects()) {
                 String subjectType = subject.getSubjectType().equals(SUBJECT_TYPE_MANDATORY) ? "필수과목" : "선택과목";
                 System.out.println("  [" + subject.getSubjectId() + "] " + subject.getSubjectName() + " (" + subjectType + ")");
@@ -297,119 +300,102 @@ public class CampManagementApplication {
     }
 
     private static String getStudentId() {
-        System.out.print("\n관리할 수강생의 번호를 입력하시오...");
+        System.out.println("==================================");
+        if (!studentStore.isEmpty()) {
+            for (Student student : studentStore) {
+                System.out.println("[" + student.getStudentId() + "] " + student.getStudentName());
+            }
+        }
+        System.out.print("\n관리할 수강생의 번호를 입력해주세요...");
+        String studentId = sc.next();
+
+        return studentId;
+    }
+
+    private static int getScoreRound() {
+        System.out.print("\n점수를 부여할 시험의 회차를 입력해주세요...");
+        return sc.nextInt();
+    }
+
+    private static String getSubjectId() {
+        System.out.println("==================================");
+        if (!studentStore.isEmpty()) {
+            for (Student student : studentStore) {
+                System.out.println("[" + student.getStudentId() + "] " + student.getStudentName());
+            }
+        }
+        System.out.print("\n관리할 과목의 번호를 입력해주세요...");
         return sc.next();
+    }
+
+    private static int getScoreNum() {
+        System.out.print("\n점수를 부여할 시험의 점수를 입력해주세요...");
+        return sc.nextInt();
     }
 
     // 수강생의 과목별 시험 회차 및 점수 등록
     private static void createScore() {
-        String studentId = getStudentId(); // 관리할 수강생 고유 번호
+        String studentId = getStudentId(); // 관리할 수강생 고유 번호 입력 받기
+        String subjectId = getSubjectId(); // 관리할 과목 ID 입력 받기
+        int scoreRound = getScoreRound(); // 시험 회차 입력 받기
+        int scoreNum = getScoreNum(); // 점수 입력 받기
+        Character scoreGrade = 0; // 등급 변수 초기화
 
-        // 기능 구현
-        System.out.println("\n점수 등록 성공!");
+
+        // 중복 확인
+        // 수강생id, 과목id, 회차 같으면 중복
+        boolean isDuplicate = false;    // 중복 체크 변수
+        if (!scoreStore.isEmpty()) {    // scoreStore 가 초기에는 비어있으니 안 비어있으면 중복 검사
+            for (Score score : scoreStore) {
+                if (score.getScoreStudentId().equals(studentId) && score.getScoreSubjectId()
+                        .equals(subjectId) && score.getScoreRound().equals(scoreRound)) {
+                    System.out.println("이미 등록되어 있습니다.");
+                    isDuplicate = true;
+                    break;
+                    }
+                }
+            }
+
+        // 필수과목, 선택과목 분류
+        for(Subject subject : subjectStore) {
+            if (subject.getSubjectId().equals(subjectId) && subject.getSubjectType().equals("MANDATORY")) {
+                System.out.println("mandatory");
+                scoreGrade = mainTranslateGrade(scoreNum);
+            } else if (subject.getSubjectId().equals(subjectId) && subject.getSubjectType().equals("CHOICE")) {
+                System.out.println("select");
+                scoreGrade = subTranslateGrade(scoreNum);
+            }
+        }
+
+        // 입력받은 정보로 점수 객체 생성
+        if (!isDuplicate) {
+            Score score = new Score(studentId, subjectId, scoreRound, scoreNum, scoreGrade);
+            scoreStore.add(score);
+            // 저장 확인
+            System.out.println("[수강생ID:" + score.getScoreStudentId() + "] [과목ID:" + score.getScoreSubjectId() +
+                    "] [회차:" + score.getScoreRound() + "] [점수:" + score.getScoreNum() +
+                    "] [등급:" + score.getScoreGrade() + "]");
+            // 점수 등록 로직 구현 (저장소에 추가)
+            System.out.println("시험 점수를 등록했습니다.");
+        }
+
+
+
+
+
     }
-
 
     // 수강생의 과목별 회차 점수 수정
     private static void updateRoundScoreBySubject() {
-
-        String studentId = getStudentId();// 관리할 수강생 고유 번호
-
-
-        //학생 ID가 있는지 검사
-        boolean studentIdValid = false;
-        for (Score score : scoreStore) {
-            if (score.getScoreStudentId().equals(studentId)) {
-                studentIdValid = true;
-                break;
-            }
-        }
-
-        if (!studentIdValid) {
-            System.out.println("등록된 학생이 아닙니다. 수강생 관리 페이지로 이동합니다.");
-            displayStudentView();
-            return;
-
-        }
-
+        String studentId = getStudentId(); // 관리할 수강생 고유 번호
         // 기능 구현 (수정할 과목 및 회차, 점수)
-
         System.out.println("시험 점수를 수정합니다...");
-
-        // 점수 수정 로직
-        // 수정할 과목의 고유번호 입력
-        // 수정할 과목의 회차를 입력
-        // 수정할 과목의 점수를 입력
-        // scoreStore를 for문을 돌려 그 안에 들어있는 값들중
-        // 해당하는 값들을 가져오기 위해 if문을 사용한다.
-        // if문 1 : 학생 고유번호가 일치한지
-        // if문 2 : 점수를 수정할 과목이 일치하는지
-        // if문 3:  회차가 일치하는지
-        // 이 모든 if문에 일치하면 점수 수정을 한다.
-        //점수 수정한 값을 scoreStore에 다시 바꿔줘야한다.
-
-        // 수정할 회차의 점수를 가져와 수정을 해야하는데 이부분을 어떻게 해결해야할까?
-        // 수정 할 떄 필요한거 1회차 50 점을 맞았어 이걸 수정을 할 때 50점으로 넣으면 중복되니까 수정안해도 된다.
-        // 수정 할 때 필요한거 1회차 검색을 했는데 없어 이 떄 점수가 없다.
-        // 검색을 했는데 회차가 없어 그러면 너 다시 등록해
-        //
-
-
-        System.out.println("수정할 과목의 고유 번호 입력 :");
-        String scoreSubjectId = sc.next();
-        Score score = null;
-        if (!score.getScoreSubjectId().equals(scoreSubjectId)) {
-            System.out.println("잘못된 과목의 고유번호를 입력했습니다. 조회 후 다시 이용해주세요");
-            displayStudentView();
-            return;
-        }
-
-        System.out.println("수정할 과목의 회차를 입력 : ");
-        Integer scoreRound = sc.nextInt();
-        System.out.println("수정할 과목의 점수를 입력 : ");
-        Integer score = sc.nextInt();
-
-
-        boolean roundFound = false;
-        boolean scoreUpdated = false;
-
-        for (Score score2 : scoreStore) {
-            if (score2.getScoreStudentId().equals(studentId) &&
-                    score2.getScoreSubjectId().equals(scoreSubjectId) &&
-                    Objects.equals(score2.getScoreRound(), scoreRound)) {
-
-                // 회차가 일치하고 점수가 동일하다면 수정할 필요 없음
-                if (Objects.equals(score2.getScoreNum(), score)) {
-                    System.out.println("점수가 기존과 동일합니다. 수정할 필요가 없습니다.");
-                    return; //점수를 수정할 필요가 없어서 함수 종료
-                }
-                // 고유번호들이 일치하고 회차가 일치하고 점수가 다르다면 점수 수정
-                System.out.println("수정되기 전 점수 : " + score2.getScoreNum());
-                score2.setScoreNum(score);
-                scoreUpdated = true;
-                roundFound = true;
-                System.out.println("수정 된 점수 : " + score2.getScoreNum());
-                break;
-            }
-        }
-
-        //회차별 점수가 등록되지 않았을 경우
-        if (!roundFound) {
-            System.out.println("등록된 회차가 없습니다. 점수 관리 페이지로 이동합니다.");
-            displayScoreView();
-        } else if (scoreUpdated) {
-            System.out.println("점수 수정 성공!");
-        } else {
-            System.out.println("점수 수정 실패 해당 회차에 점수가 존재하지 않습니다. 점수 관리 페이지로 이동합니다.");
-            displayScoreView();
-        }
-
-
-    }// 기능 구현
-
+        // 기능 구현
+        System.out.println("\n점수 수정 성공!");
+    }
 
     // 수강생의 특정 과목 회차별 등급 조회
-    public static void inquireRoundGradeBySubject() {
+    private static void inquireRoundGradeBySubject() {
         String studentId = getStudentId(); // 관리할 수강생 고유 번호
         // 기능 구현 (조회할 특정 과목)
         System.out.println("회차별 등급을 조회합니다...");
@@ -417,4 +403,56 @@ public class CampManagementApplication {
         System.out.println("\n등급 조회 성공!");
     }
 
+    public static char mainTranslateGrade(int score) {
+        char scoreGrade;
+        if (95 <= score && score <= 100) {
+            scoreGrade = 'A';
+        } else if (90 <= score && score <= 94) {
+            scoreGrade = 'B';
+        } else if (80 <= score && score <= 89) {
+            scoreGrade = 'C';
+        } else if (70 <= score && score <= 79) {
+            scoreGrade = 'D';
+        } else if (60 <= score && score <= 69) {
+            scoreGrade = 'F';
+        } else if (score < 60) {
+            scoreGrade = 'N';
+        } else {
+            throw new RuntimeException();
+        }
+        return scoreGrade;
+    }
+
+    public static char subTranslateGrade(int score) {
+        char scoreGrade;
+        if (90 <= score && score <= 100) {
+            scoreGrade = 'A';
+        } else if (80 <= score && score <= 89) {
+            scoreGrade = 'B';
+        } else if (70 <= score && score <= 79) {
+            scoreGrade = 'C';
+        } else if (60 <= score && score <= 69) {
+            scoreGrade = 'D';
+        } else if (50 <= score && score <= 59) {
+            scoreGrade = 'F';
+        } else if (score < 50) {
+            scoreGrade = 'N';
+        } else {
+            throw new RuntimeException();
+        }
+        return scoreGrade;
+    }
+}
+class Solution {
+    public int[] solution(long n) {
+        String i = Long.toString(n);
+        int[] answer = new int[i.length()];
+
+        for (int j = 0; j < i.length() ; j++) {
+            answer[j] = (int) n%10;
+            n = n/10;
+        }
+
+        return answer;
+    }
 }
