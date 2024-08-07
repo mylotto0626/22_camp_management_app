@@ -118,34 +118,6 @@ public class CampManagementApplication {
         }
     }
 
-    private static void addDummyStudent() {
-        Student student1 = new Student(sequence(INDEX_TYPE_STUDENT), "홍길동");
-        student1.addSubject(subjectStore.get(0));
-        student1.addSubject(subjectStore.get(1));
-        student1.addSubject(subjectStore.get(2));
-        student1.addSubject(subjectStore.get(5));
-        student1.addSubject(subjectStore.get(6));
-        studentStore.add(student1);
-
-        Student student2 = new Student(sequence(INDEX_TYPE_STUDENT), "김철수");
-        student2.addSubject(subjectStore.get(0));
-        student2.addSubject(subjectStore.get(1));
-        student2.addSubject(subjectStore.get(2));
-        student2.addSubject(subjectStore.get(5));
-        student2.addSubject(subjectStore.get(6));
-        studentStore.add(student2);
-
-
-        Student student3 = new Student(sequence(INDEX_TYPE_STUDENT), "이영희"); // 수강생 인스턴스 생성
-        student3.addSubject(subjectStore.get(0));
-        student3.addSubject(subjectStore.get(1)); // 스토어에 추가할 과목을 가져옴
-        student3.addSubject(subjectStore.get(2)); // spring 과목을 추가
-        student3.addSubject(subjectStore.get(5));
-        student3.addSubject(subjectStore.get(6));
-        studentStore.add(student3); // 수강생 스토어에 추가
-    }
-
-    //연습
 
     private static void displayMainView() throws InterruptedException {
         boolean flag = true;
@@ -181,7 +153,7 @@ public class CampManagementApplication {
             System.out.println("2. 수강생 목록 조회");
             System.out.println("3. 메인 화면 이동");
             System.out.print("관리 항목을 선택하세요...");
-            addDummyStudent();
+
             int input = sc.nextInt();
 
             switch (input) {
@@ -343,9 +315,6 @@ public class CampManagementApplication {
 
         String studentId = getStudentId();// 관리할 수강생 고유 번호
 
-        //더미 데이터
-        Score score3 = new Score("ST1", "SU1", 1, 100, 'A');
-        scoreStore.add(score3);
 
         //학생 ID가 있는지 검사
         boolean studentIdValid = false;
@@ -380,7 +349,6 @@ public class CampManagementApplication {
         //점수 수정한 값을 scoreStore에 다시 바꿔줘야한다.
 
         // 수정할 회차의 점수를 가져와 수정을 해야하는데 이부분을 어떻게 해결해야할까?
-
         // 수정 할 떄 필요한거 1회차 50 점을 맞았어 이걸 수정을 할 때 50점으로 넣으면 중복되니까 수정안해도 된다.
         // 수정 할 때 필요한거 1회차 검색을 했는데 없어 이 떄 점수가 없다.
         // 검색을 했는데 회차가 없어 그러면 너 다시 등록해
@@ -389,8 +357,8 @@ public class CampManagementApplication {
 
         System.out.println("수정할 과목의 고유 번호 입력 :");
         String scoreSubjectId = sc.next();
-
-        if (!score3.getScoreSubjectId().equals(scoreSubjectId)) {
+        Score score = null;
+        if (!score.getScoreSubjectId().equals(scoreSubjectId)) {
             System.out.println("잘못된 과목의 고유번호를 입력했습니다. 조회 후 다시 이용해주세요");
             displayStudentView();
             return;
