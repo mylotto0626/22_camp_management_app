@@ -483,8 +483,6 @@ public class CampManagementApplication {
 
         // 학생 id
         String studentId = getStudentId();
-        // 학생 이름
-        String studentName =getStudentName();
 
         // 과목 id
         System.out.print("조회할 과목 ID를 입력하시오: ");
@@ -510,7 +508,7 @@ public class CampManagementApplication {
 
             if (needScore.getScoreStudentId().equals(studentId) && needScore.getScoreSubjectId().equals(subjectId) ) {
                 foundScores= true;
-                System.out.println("고유번호: [" + studentId + "] ,"+"학생 이름 : "+studentName);
+                System.out.println("고유번호: [" + studentId + "] ");
                 System.out.println("회차: " + needScore.getScoreRound() + ", 등급: " + needScore.getScoreGrade());
             }
         }
