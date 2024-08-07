@@ -8,9 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 // dev
+
 /**
  * Notification
  * Java, 객체지향이 아직 익숙하지 않은 분들은 위한 소스코드 틀입니다.
@@ -20,23 +21,20 @@ import java.util.HashSet;
  * 구현에 도움을 주기위한 Base 프로젝트입니다. 자유롭게 이용해주세요!
  */
 public class CampManagementApplication {
+    private static final String INDEX_TYPE_STUDENT = "ST";
+    private static final String INDEX_TYPE_SUBJECT = "SU";
+    private static final String INDEX_TYPE_SCORE = "SC";
     // 데이터 저장소
     private static List<Student> studentStore;
     private static List<Subject> subjectStore;
     private static List<Score> scoreStore;
-
     // 과목 타입
     private static String SUBJECT_TYPE_MANDATORY = "MANDATORY";
     private static String SUBJECT_TYPE_CHOICE = "CHOICE";
-
     // index 관리 필드
     private static int studentIndex;
-    private static final String INDEX_TYPE_STUDENT = "ST";
     private static int subjectIndex;
-    private static final String INDEX_TYPE_SUBJECT = "SU";
     private static int scoreIndex;
-    private static final String INDEX_TYPE_SCORE = "SC";
-
     // 스캐너
     private static Scanner sc = new Scanner(System.in);
 
@@ -120,7 +118,6 @@ public class CampManagementApplication {
             }
         }
     }
-
     //연습
 
     private static void displayMainView() throws InterruptedException {
@@ -177,21 +174,15 @@ public class CampManagementApplication {
         String studentName = getStudentName(); // 해석하면 학생 이름을 가져옴 -> getStudentName() 메서드를 호출하여 학생 이름을 가져옴
         if (studentName == null) return; // 학생 이름이 null 이면(비어있으면) return -> 즉, 학생 이름이 비어있으면 이전 화면으로 이동
 
-        Set<Subject> selectedMandatorySubjects = getSubjects(SUBJECT_TYPE_MANDATORY, 3); // 필수 과목을 SUBJECT_TYPE_MANDATORY 의 minCount n개로가져옴
+        Set<Subject> selectedMandatorySubjects = getSubjects(SUBJECT_TYPE_MANDATORY, 3); // 필수 과목을 SUBJECT_TYPE_MANDATORY 의 minCount n개로가져옴 + set<Subject>로 반환>> = 중복X > 똑같은 과목이 여러 번 추가되는 걸 방지
         if (selectedMandatorySubjects == null) return; // 필수 과목이 null 이면 return -> 즉, 필수 과목이 비어있으면 이전 화면으로 이동
 
-        Set<Subject> selectedOptionalSubjects = getSubjects(SUBJECT_TYPE_CHOICE, 2); // 선택 과목을 SUBJECT_TYPE_CHOICE 의 minCount 로 n개로가져옴
-        if (selectedOptionalSubjects == null) return; // 선택 과목이 null 이면 return -> 즉, 선택 과목이 비어있으면  이전 화면으로 이동
-
-        // 과목 수 확인
-        if (selectedMandatorySubjects.size() < 3 || selectedOptionalSubjects.size() < 2) { // 필수 과목이 3개 미만이거나 선택 과목이 2개 미만이면
-            System.out.println("필수 과목은 최소 3개, 선택 과목은 최소 2개 이상 선택해야 합니다.\n메인 화면 이동..."); // 조건이 맞지 않으면 호출할 메세지
-            return; // 이전 화면으로 이동
-        }
+        Set<Subject> selectedChoiceSubjects = getSubjects(SUBJECT_TYPE_CHOICE, 2); // 선택 과목을 SUBJECT_TYPE_CHOICE 의 minCount 로 n개로가져옴
+        if (selectedChoiceSubjects == null) return; // 선택 과목이 null 이면 return -> 즉, 선택 과목이 비어있으면  이전 화면으로 이동
 
         Student student = new Student(sequence(INDEX_TYPE_STUDENT), studentName); // 수강생 등록 인스턴스 생성 -> sequence 메서드를 호출하여 INDEX_TYPE_STUDENT를 통해 학생 고유번호를 가져옴
-        selectedMandatorySubjects.forEach(student::addSubject); // 필수 과목을 sutdent에 추가
-        selectedOptionalSubjects.forEach(student::addSubject); // 선택 과목을 sutdent에 추가
+        selectedMandatorySubjects.forEach(student :: addSubject); // 필수 과목을 sutdent에 추가
+        selectedChoiceSubjects.forEach(student :: addSubject); // 선택 과목을 sutdent에 추가
 
         studentStore.add(student); // 수강생 스토어에 추가
         System.out.println("수강생 등록 성공!\n");
@@ -208,12 +199,11 @@ public class CampManagementApplication {
     }
 
     private static Set<Subject> getSubjects(String type, int minCount) {
-        Set<Subject> selectedSubjects = new HashSet<>();
-        String displayType = type.equals(SUBJECT_TYPE_MANDATORY) ? "필수과목" : "선택과목"; // ?는 삼항연산자, type이 SUBJECT_TYPE_MANDATORY 이면 "필수과목" 아니면 "선택과목"을 displayType에 저장
-        System.out.println("\n" + displayType + "을 선택하세요. (취소: 0)");
-        subjectStore.stream()
-                .filter(subject -> subject.getSubjectType().equals(type))
-                .forEach(subject -> System.out.println("[" + subject.getSubjectId() + "] " + subject.getSubjectName()));
+        Set<Subject> selectedSubjects = new LinkedHashSet<>(); // 중복을 허용하지 않는 Set 인터페이스를 구현한 LinkedHashSet 인스턴스 생성 -> 선택한 과목을 저장할 selectedSubjects + LinkedHashSet를 이용해 저장 순서를 유지하면서 중복방지
+        String displayType = type.equals(SUBJECT_TYPE_MANDATORY) ? "필수과목" : "선택과목"; // type이 SUBJECT_TYPE_MANDATORY 이면 "필수과목" 아니면 "선택과목"을 displayType에 저장, equals 메서드를 사용해서 스트링만으로도
+        subjectStore.stream() // subjectStore를 stream으로 변환
+                .filter(subject -> subject.getSubjectType().equals(type)) // subject의 subjectType이 type과 같은 것만 찾음 type은 SUBJECT_TYPE_MANDATORY 또는 SUBJECT_TYPE_CHOICE,
+                .forEach(subject -> System.out.println("[" + subject.getSubjectId() + "] " + subject.getSubjectName())); // 찾은 subject의 subjectId와 subjectName를 forEach를 사용하여 루프를 돌면서 출력
 
         while (true) {
             System.out.print("과목 번호를 입력하세요 (쉼표로 구분, 최소 " + minCount + "개): ");
@@ -223,56 +213,63 @@ public class CampManagementApplication {
                 return null;
             }
 
-            String[] subjectIdArray = subjectIds.split(",");
-            if (subjectIdArray.length < minCount) {
+            String[] subjectIdArray = subjectIds.split(","); // subjectIds를 쉼표로 구분하여 배열로 저장
+            if (subjectIdArray.length < minCount) { // subjectIdArray의 길이가 minCount보다 작으면
                 System.out.println(displayType + "은 최소 " + minCount + "개 이상 선택해야 합니다. 다시 시도하세요.");
                 continue;
             }
 
             for (String subjectId : subjectIdArray) {
-                subjectStore.stream()
-                        .filter(subject -> subject.getSubjectId().equals(subjectId.trim()) && subject.getSubjectType().equals(type))
-                        .findFirst()
-                        .ifPresent(subject -> {
-                            if (selectedSubjects.contains(subject)) {
+                subjectStore.stream() // subjectStore를 stream으로 변환
+                        .filter(subject -> subject.getSubjectId().equals(subjectId.trim()) && subject.getSubjectType().equals(type)) // subject의 subjectId가 subjectId와 같고 subjectType이 type과 같은 것만 찾음
+                        .findFirst() // 찾은 것 중 첫번째 것만 찾음 하나만 찾아도 되는 이유는 subjectId는 중복이 없기 때문 -> 중복이 있으면 findAny()를 사용 -> Optional로 반환 -> ifPresent를 사용하여 값이 있으면 실행
+                        .ifPresent(subject -> { // 값이 있으면 실행
+                            if (selectedSubjects.contains(subject)) { // selectedSubjects에 subject가 포함되어 있으면 -> 중복을 허용하지 않기 위해 contains 메서드를 사용 -> 중복이 있으면 출력
                                 System.out.println("이미 입력한 과목입니다: " + subject.getSubjectName());
                             } else {
-                                selectedSubjects.add(subject);
+                                selectedSubjects.add(subject); // selectedSubjects에 subject를 추가 else문에서 중복이 없으면 추가 = 중복을 허용하지 않기 위해 add 메서드를 사용 >> add 메서드를 사용하면 중복을 허용하지 않음
                             }
                         });
             }
 
-            if (selectedSubjects.size() >= minCount) {
-                break;
+            if (selectedSubjects.size() >= minCount) { // selectedSubjects의 크기가 minCount보다 크거나 같으면
+                break; // 반복문 탈출
             } else {
                 System.out.println(displayType + "은 최소 " + minCount + "개 이상 선택해야 합니다. 다시 시도하세요.");
-                selectedSubjects.clear();
+                selectedSubjects.clear(); // selectedSubjects를 비움 -> 왜??? >>> 다시 선택할 수 있도록 초기화시키려고 초기화 안하면 계속 더해져서 minCount(최소 선택 수)를 벗어날 수 있음
             }
-        }
 
-        return selectedSubjects;
+        }
+        return selectedSubjects; // 선택한 과목을 반환해쥼
     }
 
+    // 수강생 목록 조회
+    private static void inquireStudent() {
+        System.out.println("**********************************");
+        System.out.println("수강생 목록을 조회합니다...");
+        System.out.println("**********************************");
 
-// 수강생 목록 조회
-private static void inquireStudent() {
-    System.out.println("**********************************");
-    System.out.println("수강생 목록을 조회합니다...");
-    System.out.println("**********************************");
-    for (Student student : studentStore) {
-        System.out.println("==================================");
-        System.out.println("고유번호 : " + "[" + student.getStudentId() + "] " + "이름 : "+ student.getStudentName());
-        System.out.println("과목 목록 :");
-        for (Subject subject : student.getSubjects()) {
-            String subjectType = subject.getSubjectType().equals(SUBJECT_TYPE_MANDATORY) ? "필수과목" : "선택과목";
-            System.out.println("  [" + subject.getSubjectId() + "] " + subject.getSubjectName() + " (" + subjectType + ")");
+        if (studentStore.isEmpty()) { // studentStore가 비어있으면
+            System.out.println("##### 등록된 수강생이 존재하지 않습니다. #####"); // 수강생이 존재하지 않는다고 출력
+            return; // 메서드 종료시킴
         }
-        System.out.println("==================================");
+
+        for (Student student : studentStore) { // studentStore를 루프를 돌면서 student에 저장
+            System.out.println("==================================");
+            System.out.println("고유번호 : " + "[" + student.getStudentId() + "] " + "이름 : " + student.getStudentName());
+            System.out.println("과목 목록 :");
+            for (Subject subject : student.getSubjects()) { // 과목은 student의 getSubjects를 루프를 돌면서 subject에 저장 출력이 제대로 안되는 버그 방지를 위해 2중으로 루프를 돌면서 출력
+                String subjectType = subject.getSubjectType().equals(SUBJECT_TYPE_MANDATORY) ? "필수과목" : "선택과목"; // subjectType이 SUBJECT_TYPE_MANDATORY 이면 필수과목 아니면 선택과목을 subjectType에 저장
+                System.out.println("  [" + subject.getSubjectId() + "] " + subject.getSubjectName() + " (" + subjectType + ")");
+            }
+            System.out.println("==================================");
+        }
+
+
+        System.out.println("**********************************");
+        System.out.println("수강생 목록 조회 성공!");
+        System.out.println("**********************************");
     }
-    System.out.println("**********************************");
-    System.out.println("수강생 목록 조회 성공!");
-    System.out.println("**********************************");
-}
 
     private static void displayScoreView() {
         boolean flag = true;
