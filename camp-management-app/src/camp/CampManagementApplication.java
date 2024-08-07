@@ -297,6 +297,7 @@ public class CampManagementApplication {
         }
     }
 
+    // 수강생 ID 입력
     private static String getStudentId() {
         System.out.println("==================================");
         if (!studentStore.isEmpty()) {
@@ -310,23 +311,28 @@ public class CampManagementApplication {
         return studentId;
     }
 
+    // 회차 입력
     private static int getScoreRound() {
+        System.out.println("==================================");
         System.out.print("\n점수를 부여할 시험의 회차를 입력해주세요...");
         return sc.nextInt();
     }
 
+    // 점수 등록
     private static String getSubjectId() {
         System.out.println("==================================");
-        if (!studentStore.isEmpty()) {
-            for (Student student : studentStore) {
-                System.out.println("[" + student.getStudentId() + "] " + student.getStudentName());
-            }
-        }
+//        if (!studentStore.isEmpty()) {
+//            for (Student student : studentStore) {
+//                System.out.println("[" + student.getStudentId() + "] " + student.getStudentName());
+//            }
+//        }
         System.out.print("\n관리할 과목의 번호를 입력해주세요...");
         return sc.next();
     }
 
+    // 점수 입력
     private static int getScoreNum() {
+        System.out.println("==================================");
         System.out.print("\n점수를 부여할 시험의 점수를 입력해주세요...");
         return sc.nextInt();
     }
@@ -357,10 +363,8 @@ public class CampManagementApplication {
         // 필수과목, 선택과목 분류
         for(Subject subject : subjectStore) {
             if (subject.getSubjectId().equals(subjectId) && subject.getSubjectType().equals("MANDATORY")) {
-                System.out.println("mandatory");
                 scoreGrade = mainTranslateGrade(scoreNum);
             } else if (subject.getSubjectId().equals(subjectId) && subject.getSubjectType().equals("CHOICE")) {
-                System.out.println("select");
                 scoreGrade = subTranslateGrade(scoreNum);
             }
         }
@@ -541,18 +545,5 @@ public class CampManagementApplication {
             throw new RuntimeException();
         }
         return scoreGrade;
-    }
-}
-class Solution {
-    public int[] solution(long n) {
-        String i = Long.toString(n);
-        int[] answer = new int[i.length()];
-
-        for (int j = 0; j < i.length() ; j++) {
-            answer[j] = (int) n%10;
-            n = n/10;
-        }
-
-        return answer;
     }
 }
